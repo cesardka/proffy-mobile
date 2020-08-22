@@ -1,14 +1,15 @@
-import React from 'react';
-import { View, Image, Text } from 'react-native';
-import { RectButton } from 'react-native-gesture-handler';
+import React, { useState }               from 'react';
+import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import { View, Image, Text }             from 'react-native';
+import { RectButton }                    from 'react-native-gesture-handler';
 
-import styles     from './styles';
+import api    from '../../services/api';
+import styles from './styles';
 
-import landingImg from '../../assets/images/landing.png';
-import studyIcon  from '../../assets/images/icons/study.png';
+import landingImg      from '../../assets/images/landing.png';
+import studyIcon       from '../../assets/images/icons/study.png';
 import giveClassesIcon from '../../assets/images/icons/give-classes.png';
 import heartIcon       from '../../assets/images/icons/heart.png';
-import { useNavigation } from '@react-navigation/native';
 
 function Landing() {
     const { navigate } = useNavigation();
@@ -20,6 +21,17 @@ function Landing() {
     function handleNavigateToStudyPages() {
         navigate('Study');
     }
+
+    const [ totalConnections, setTotalConnections ] = useState(0);
+
+    useFocusEffect(() => {
+        async function updateTotalConnections() {
+            const { data: { total } } = await api.get('connections');
+            setTotalConnections(total);
+        }
+
+        updateTotalConnections()
+    });
 
     return (
         <View style={styles.container}>
@@ -48,7 +60,7 @@ function Landing() {
             </View>
 
             <Text style={styles.totalConnections}>
-                Total de 12 conexões já realizadas {' '}
+                Total de {totalConnections} conexões já realizadas {' '}
                 <Image source={heartIcon} />
             </Text>
         </View>
